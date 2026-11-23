@@ -18,6 +18,8 @@ wantType:
       category-icon: Trophy
       # What the tile shows at a glance: the followed team's points.
       tile-readout: team_score
+      # …in front of the team's logo, so the figure says whose it is.
+      tile-readout-image: team_logo
 
   finalResultField: summary
 
