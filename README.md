@@ -32,6 +32,14 @@ wants:
 
 One team alone (`query: bills`) is that team's game this week.
 
+## Card
+
+A scoreboard: the league and the clock on top, both teams' logos with the
+score between them, their names and season records, and — while the game is
+on — each side's timeouts left, the ball beside whoever has it, and where play
+stands. The logos are shown from the URLs the scoreboard gives; none are kept
+in this repository.
+
 ## Timings
 
 | Timing | When | Default |
@@ -50,3 +58,4 @@ One team alone (`query: bills`) is that team's game this week.
 | :--- | :--- |
 | `game_score.yaml` | want type: parameters, state, timings, poll interval |
 | `main.py` | reads the scoreboard and finds the game |
+| `view/plugin.jsx` | the card: a scoreboard with both logos, the score, the period and clock, timeouts and who has the ball |

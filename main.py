@@ -116,9 +116,38 @@ def main() -> None:
         their_name = them.get("shortDisplayName") or them.get("displayName", "")
         summary = (f"{my_name} {my_score} - {their_score} {their_name}（{detail}）"
                    if state != "pre" else f"{my_name} vs {their_name}（{detail}）")
+        record = lambda c: ((c.get("records") or [{}])[0] or {}).get("summary", "")
+        situation = comp.get("situation") or {}
+
+        def timeouts(c: dict) -> int:
+            n = situation.get("homeTimeouts" if c.get("homeAway") == "home" else "awayTimeouts")
+            return int(n) if isinstance(n, (int, float)) and state == "in" else -1
+
+        # "Q3 - 10:57" while it is played (a period and its clock), else ESPN's
+        # own word (Halftime, Final, the start time).
+        st = event.get("status") or {}
+        label = (f"Q{st.get('period')} - {st.get('displayClock')}"
+                 if state == "in" and status.get("name") == "STATUS_IN_PROGRESS" and st.get("period") else detail)
+        color = lambda t: f"#{t['color']}" if t.get("color") else ""
+        broadcasts = [n for b in (comp.get("broadcasts") or []) for n in (b.get("names") or [])]
         emit({
             "team_name": my_name, "team_score": my_score,
             "opponent_name": their_name, "opponent_score": their_score,
+            # For the card: each side's logo, colour and season record, and
+            # which of the two is at home.
+            "team_logo": me.get("logo", ""), "opponent_logo": them.get("logo", ""),
+            "team_color": color(me), "opponent_color": color(them),
+            "team_record": record(mine), "opponent_record": record(other),
+            "team_home": mine.get("homeAway") == "home",
+            "venue": (comp.get("venue") or {}).get("fullName", ""),
+            "broadcast": "・".join(broadcasts),
+            "situation": situation.get("downDistanceText", "") if state == "in" else "",
+            "team_full_name": me.get("displayName", my_name), "opponent_full_name": them.get("displayName", their_name),
+            # Timeouts left and who has the ball, while it is being played.
+            "team_timeouts": timeouts(mine), "opponent_timeouts": timeouts(other),
+            "team_possession": state == "in" and str(situation.get("possession", "")) == str(me.get("id", "")),
+            "opponent_possession": state == "in" and str(situation.get("possession", "")) == str(them.get("id", "")),
+            "status_label": label,
             "game_state": state, "game_status": detail,
             "game_final": state == "post",
             "game_start": event.get("date", ""),

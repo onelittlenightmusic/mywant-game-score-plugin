@@ -7,6 +7,8 @@ wantType:
       scoreboard (no key), every minute, and tells the moment the team you
       follow scores, and when the game is over.
       Calls python3 ~/.mywant/custom-types/mywant-game-score-plugin/main.py '<json>'.
+      Its card (view/plugin.jsx) is a scoreboard: both logos, the score, the
+      period and clock, timeouts and who has the ball.
     version: '1.0'
     category: sports
     pattern: independent
@@ -101,6 +103,159 @@ wantType:
       initialValue: 0
       fetchFrom: mrs_raw_output
       onFetchData: "opponent_score"
+
+    - name: team_logo
+      description: The followed team's logo (an image URL)
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "team_logo"
+
+    - name: opponent_logo
+      description: The other team's logo (an image URL)
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "opponent_logo"
+
+    - name: team_color
+      description: The followed team's colour (#rrggbb)
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "team_color"
+
+    - name: opponent_color
+      description: The other team's colour (#rrggbb)
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "opponent_color"
+
+    - name: team_record
+      description: The followed team's season record (e.g. 8-1)
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "team_record"
+
+    - name: opponent_record
+      description: The other team's season record
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "opponent_record"
+
+    - name: team_home
+      description: The followed team is at home
+      type: bool
+      label: current
+      persistent: true
+      initialValue: false
+      fetchFrom: mrs_raw_output
+      onFetchData: "team_home"
+
+    - name: venue
+      description: Where the game is played
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "venue"
+
+    - name: broadcast
+      description: Who shows it (e.g. NBC)
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "broadcast"
+
+    - name: situation
+      description: Where play stands while it is on (e.g. "2nd & 5 at MIN 10")
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "situation"
+
+    - name: team_full_name
+      description: "The followed team's full name (e.g. San Francisco 49ers)"
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "team_full_name"
+
+    - name: opponent_full_name
+      description: "The other team's full name"
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "opponent_full_name"
+
+    - name: team_timeouts
+      description: "The followed team's timeouts left (-1 when not being played)"
+      type: int
+      label: current
+      persistent: true
+      initialValue: -1
+      fetchFrom: mrs_raw_output
+      onFetchData: "team_timeouts"
+
+    - name: opponent_timeouts
+      description: "The other team's timeouts left (-1 when not being played)"
+      type: int
+      label: current
+      persistent: true
+      initialValue: -1
+      fetchFrom: mrs_raw_output
+      onFetchData: "opponent_timeouts"
+
+    - name: team_possession
+      description: 'The followed team has the ball'
+      type: bool
+      label: current
+      persistent: true
+      initialValue: false
+      fetchFrom: mrs_raw_output
+      onFetchData: "team_possession"
+
+    - name: opponent_possession
+      description: 'The other team has the ball'
+      type: bool
+      label: current
+      persistent: true
+      initialValue: false
+      fetchFrom: mrs_raw_output
+      onFetchData: "opponent_possession"
+
+    - name: status_label
+      description: 'Where the game is, short (e.g. "Q3 - 10:57", "Final")'
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "status_label"
 
     - name: game_state
       description: "pre (not started), in (being played) or post (over)"
