@@ -1,0 +1,239 @@
+wantType:
+  metadata:
+    name: game_score
+    title: Game Score
+    description: |
+      Follows a game's score — "49ers vs vikings" — from ESPN's public
+      scoreboard (no key), every minute, and tells the moment the team you
+      follow scores, and when the game is over.
+      Calls python3 ~/.mywant/custom-types/mywant-game-score-plugin/main.py '<json>'.
+    version: '1.0'
+    category: sports
+    pattern: independent
+    labels:
+      aliases: "score,スコア,試合"
+      type-icon: Trophy
+      category-icon: Trophy
+      # What the tile shows at a glance: the followed team's points.
+      tile-readout: team_score
+
+  finalResultField: summary
+
+  # When it tells of its answer — read every minute, so not every answer is
+  # news (the standard timing "answer" turned off). scored: the followed
+  # team's points went up (the engine compares with the last answer). final:
+  # the game is over.
+  timings:
+    - name: answer
+      description: 新しい結果が出たとき（毎分の更新では知らせない）
+      murmur: false
+      notify: false
+    - name: scored
+      description: 応援しているチームが得点したとき
+      icon: trending-up
+      onIncrease: team_score
+      murmur: true
+      notify: true
+    - name: final
+      description: 試合が終わったとき
+      icon: flag
+      if: game_final
+      onChange: game_state
+      murmur: true
+      notify: true
+
+  parameters:
+    - name: query
+      description: The game, as you would search it — "49ers vs vikings" (one team alone is that team's game this week)
+      type: string
+      required: true
+      example: 49ers vs vikings
+
+    - name: team
+      description: The team whose points are followed; empty, the first in the query
+      type: string
+      required: false
+      default: ""
+      example: 49ers
+
+    - name: league
+      description: "nfl (default), ncaaf, nba, wnba, ncaab, mlb or nhl"
+      type: string
+      required: false
+      default: "nfl"
+
+  state:
+    - name: team_name
+      description: The followed team, as ESPN calls it
+      type: string
+      label: current
+      persistent: true
+      exposable: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "team_name"
+
+    - name: team_score
+      description: The followed team's points
+      type: int
+      label: current
+      persistent: true
+      exposable: true
+      initialValue: 0
+      fetchFrom: mrs_raw_output
+      onFetchData: "team_score"
+
+    - name: opponent_name
+      description: The other team
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "opponent_name"
+
+    - name: opponent_score
+      description: The other team's points
+      type: int
+      label: current
+      persistent: true
+      exposable: true
+      initialValue: 0
+      fetchFrom: mrs_raw_output
+      onFetchData: "opponent_score"
+
+    - name: game_state
+      description: "pre (not started), in (being played) or post (over)"
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "game_state"
+
+    - name: game_status
+      description: Where the game is, as ESPN says it (e.g. "0:35 - 2nd", "Final")
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "game_status"
+
+    - name: game_final
+      description: The game is over
+      type: bool
+      label: current
+      persistent: true
+      initialValue: false
+      fetchFrom: mrs_raw_output
+      onFetchData: "game_final"
+
+    - name: game_start
+      description: When the game starts, ISO 8601
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "game_start"
+
+    - name: summary
+      description: The score in one line (e.g. "49ers 28 - 10 Vikings（0:35 - 2nd）")
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "summary"
+
+    - name: last_updated
+      description: When it was last read
+      type: string
+      label: current
+      persistent: false
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "last_updated"
+
+    - name: last_error
+      description: Why it could not be read, if it could not
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+      fetchFrom: mrs_raw_output
+      onFetchData: "last_error"
+
+    # MRS agent config fields
+    - name: skill_path
+      description: Path to the script
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+
+    - name: skill_required_params
+      description: Params that must be non-empty before the script runs
+      type: string
+      label: current
+      persistent: false
+      initialValue: ""
+
+    - name: skill_json_arg_template
+      description: Template for skill_json_arg, rebuilt from spec.params each tick
+      type: string
+      label: current
+      persistent: true
+      initialValue: ""
+
+    - name: skill_json_arg
+      description: The JSON argument handed to the script
+      type: string
+      label: current
+      persistent: false
+      initialValue: ""
+
+    - name: skill_timeout_seconds
+      description: Script timeout in seconds
+      type: int
+      label: goal
+      persistent: true
+      initialValue: 30
+
+    - name: skill_poll_interval_ms
+      description: How often the score is read — a minute
+      type: int
+      label: goal
+      persistent: true
+      initialValue: 60000
+
+    - name: mrs_raw_output
+      description: Raw JSON output from the script
+      type: object
+      label: current
+      persistent: false
+      initialValue: null
+
+  onInitialize:
+    current:
+      skill_path: "~/.mywant/custom-types/mywant-game-score-plugin/main.py"
+      skill_required_params: "query"
+      skill_json_arg_template: '{"query":"%{query}","team":"%{team}","league":"%{league}"}'
+    goal:
+      skill_timeout_seconds: 30
+      skill_poll_interval_ms: 60000
+
+  requires:
+    - monitor_mrs_agent
+
+  examples:
+    - name: 49ers vs Vikings
+      description: Follow the 49ers' points in their game against the Vikings
+      want:
+        metadata:
+          name: 49ers-vs-vikings
+          type: game_score
+        spec:
+          params:
+            query: 49ers vs vikings
