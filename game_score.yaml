@@ -57,6 +57,7 @@ wantType:
       example: 49ers vs vikings
 
     - name: team
+      context: interest.subject
       description: The team whose points are followed; empty, the first in the query
       type: string
       required: false
