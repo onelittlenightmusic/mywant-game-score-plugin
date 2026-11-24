@@ -13,6 +13,9 @@ wantType:
     category: sports
     pattern: independent
     labels:
+      # What the robot reads a request against, when it asks Laya which want
+      # it is: the type in a few words of its own (laya-option).
+      laya-option: "スポーツの試合のスコアを追う"
       aliases: "score,スコア,試合"
       type-icon: Trophy
       category-icon: Trophy
@@ -394,3 +397,20 @@ wantType:
         spec:
           params:
             query: 49ers vs vikings
+
+  # How a want of this type is asked for, in words, and what it is made with
+  # (want-spec asks): what reads requests (the robot, Laya) learns from these
+  # and is tested on them. A parameter left out is one the request does not say.
+  asks:
+    - say: "49ers vs vikingsのスコア"
+      variants: ["49ers vs vikingsの試合のスコア", "49ers vs vikingsの点数を追って", "49ers vs vikingsは今何点？"]
+      params: {"query": "49ers vs vikings"}
+    - say: "49ersの試合"
+      variants: ["49ersの試合のスコア", "49ersの試合を追って", "49ersの点数"]
+      params: {"query": "49ers"}
+    - say: "レイカーズの試合を追って"
+      variants: ["レイカーズの試合のスコア", "レイカーズの点数", "レイカーズの試合経過"]
+      params: {"query": "レイカーズ"}
+    - say: "dodgers vs yankeesの試合"
+      variants: ["dodgers vs yankeesのスコア", "dodgers vs yankeesの試合経過を追って", "dodgers vs yankeesは何点？"]
+      params: {"query": "dodgers vs yankees"}
